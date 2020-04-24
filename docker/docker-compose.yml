@@ -1,0 +1,9 @@
+version: '3'
+services:
+    database:
+        image: 'mongo:4.0.4'
+        container_name: 'mongo'
+        volumes:
+            - ./volume_404:/data/db
+        ports:
+            - '27017-27019:27017-27019'
