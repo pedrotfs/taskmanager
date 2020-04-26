@@ -12,6 +12,18 @@ router.post("/users", async (req, res) => {
     }
 })
 
+router.post("/users/login", async (req, res) => {
+    try {
+        console.log("login")
+        console.log(req.body)
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        console.log("login2")
+        res.send(user)
+    } catch(e) {
+        res.status(500).send()
+    }
+})
+
 router.get("/users", async (req, res) => {
     try {
         const users = await User.find({})
@@ -35,12 +47,15 @@ router.get("/users/:id", async (req, res) => {
 })
 
 router.patch("/users/:id", async (req, res) => {
+    const updates = Object.keys(req.body)
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true}) //new retorna o usuário pós alteração
+        const user = await User.findById(req.params.id) //new retorna o usuário pós alteração
+        updates.forEach((update) => { user[update] = req.body[update] })
+        await user.save()
         if(!user) {
             return res.status(404).send()
         }
-        res.send(user)
+        res.status(201).send(user)
     } catch(e) {
         res.status(400).send()
     }
