@@ -28,6 +28,29 @@ router.post("/users/login", async (req, res) => {
     }
 })
 
+router.post("/users/logout", auth, async(req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+        await req.user.save()
+        res.send(req.token)
+    } catch(e) {
+        res.status(500).send()
+    }
+})
+
+router.post("/users/logout/all", auth, async(req, res) => {
+    try {
+        const revoked = req.user.tokens
+        req.user.tokens = []
+        await req.user.save()
+        res.send(revoked)
+    } catch(e) {
+        res.status(500).send()
+    }
+})
+
 router.get("/users", auth, async (req, res) => {
     try {
         const users = await User.find({})

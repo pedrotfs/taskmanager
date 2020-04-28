@@ -69,6 +69,16 @@ userScheme.methods.generateAuthToken = async function() {
     return token
 }
 
+userScheme.methods.toJSON = function() {
+    const user = this
+    const userObject = user.toObject() // remove informações do mongoose
+
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+
 userScheme.pre("save", async function (next) {
     const user = this
     if(user.isModified("password")) {
