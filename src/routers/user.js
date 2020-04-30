@@ -65,7 +65,7 @@ router.get("/users/me", auth, async (req, res) => {
     res.send(req.user)
 })
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", auth, async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
         if(!user) {
@@ -77,7 +77,19 @@ router.get("/users/:id", async (req, res) => {
     }
 })
 
-router.patch("/users/:id", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
+    const updates = Object.keys(req.body)
+    try {
+        const user = req.user
+        updates.forEach((update) => { user[update] = req.body[update] })
+        await user.save()
+        res.status(201).send(user)
+    } catch(e) {
+        res.status(400).send()
+    }
+})
+
+router.patch("/users/:id", auth, async (req, res) => {
     const updates = Object.keys(req.body)
     try {
         const user = await User.findById(req.params.id) //new retorna o usuário pós alteração
@@ -92,7 +104,27 @@ router.patch("/users/:id", async (req, res) => {
     }
 })
 
-router.delete("/users/:id", async(req, res) => {
+router.delete("/users/me", auth, async(req, res) => {
+    console.log("1")
+    try {
+        console.log(req.user)
+        await req.user.remove()
+        res.send(req.user)
+    } catch(e) {
+        res.status(400).send()
+    }
+})
+
+router.delete("/users/me", auth, async(req, res) => {
+    try {
+        await User.findByIdAndDelete(req.user._id)
+        res.send(user)
+    } catch(e) {
+        res.status(400).send()
+    }
+})
+
+router.delete("/users/:id", auth, async(req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id)
         if(!user) {
