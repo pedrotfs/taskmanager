@@ -48,13 +48,14 @@ const userScheme = new mongoose.Schema({
             required: true
         }
     }]
+},  {
+    timestamps: true //ativa timestamps para criação e atualização
 })
 
 userScheme.virtual("tasks", {
     ref:"Task",
     localField: "_id",
     foreignField: "owner"
-
 })
 
 userScheme.statics.findByCredentials = async (email, password) => {

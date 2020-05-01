@@ -17,7 +17,7 @@ router.post("/tasks", auth, async (req, res) => {
     }
 })
 
-router.get("/tasks", async (req, res) => {
+router.get("/tasks", auth, async (req, res) => {
     try {
         const tasks = await Task.find({})
         res.send(tasks)
@@ -27,9 +27,38 @@ router.get("/tasks", async (req, res) => {
 })
 
 router.get("/tasks/mine", auth, async (req, res) => {
+    const match = {}
+    const options = {}
+    const sort = {}
+    if(req.query.complete) {
+        match.complete = req.query.complete === "true"
+    }
+    
+    if(req.query.limit) {
+        options.limit = parseInt(req.query.limit)
+    } else {
+        options.limit = 4
+    }
+
+    if(req.query.page) {
+        options.skip = parseInt(req.query.page)
+    } else {
+        options.skip = 0
+    }
+
+    if(req.query.sortBy) {
+        const parts = req.query.sortBy.split(":")
+        sort[parts[0]] = parts[1] === "asc" ? 1 : -1 //setando propriedade dinamica sort[parts[0]]
+        options.sort = sort
+    }
+
     try {
-        const tasks = await Task.find({owner: req.user._id})
-        res.send(tasks)
+        await req.user.populate({
+            path: "tasks",
+            match: match,
+            options: options
+        }).execPopulate()
+        res.send(req.user.tasks)
     } catch(e) {
         res.status(500).send()
     }

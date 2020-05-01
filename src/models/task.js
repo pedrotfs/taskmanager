@@ -16,6 +16,8 @@ const taskScheme = new mongoose.Schema({
         ref:"User" //referência outro model, exatamente como foi exportado
     }
 
+}, {
+    timestamps: true
 })
 
 const Task = mongoose.model("Task", taskScheme)
