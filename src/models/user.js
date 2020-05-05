@@ -75,7 +75,7 @@ userScheme.statics.findByCredentials = async (email, password) => {
 
 userScheme.methods.generateAuthToken = async function() {
     const user = this
-    const token = jwt.sign({_id: user._id.toString()}, "secret")     
+    const token = jwt.sign({_id: user._id.toString()}, process.env.TOKEN_SECRET)     
     user.tokens = user.tokens.concat({token: token})
     await user.save()
     return token
@@ -87,7 +87,7 @@ userScheme.methods.toJSON = function() {
 
     delete userObject.password
     delete userObject.tokens
-    delete userObjetc.avatar // polui muito o json. já é fornecido via url pelo express
+    delete userObject.avatar // polui muito o json. já é fornecido via url pelo express
 
     return userObject
 }

@@ -6,8 +6,8 @@ const userRouter = require("./routers/user")
 const taskRouter = require("./routers/task")
 
 const app = express()
-const port = process.env.PORT || 3000
-const maintenance = process.env.MAINTENANCE || false
+const port = process.env.PORT
+const maintenance = process.env.MAINTENANCE === "true" || false
 
 app.use((req, res, next) => {
     if(maintenance) {
