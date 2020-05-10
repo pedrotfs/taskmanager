@@ -67,17 +67,6 @@ router.post("/users/logout/all", auth, async(req, res) => {
     }
 })
 
-router.post("/users/logout/all", auth, async(req, res) => {
-    try {
-        const revoked = req.user.tokens
-        req.user.tokens = []
-        await req.user.save()
-        res.send(revoked)
-    } catch(e) {
-        res.status(500).send()
-    }
-})
-
 router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) => { //autentica primeiro depois envia foto
     const buffer = await sharp(req.file.buffer).png().resize({width: 250, height: 250}).toBuffer() //converte para png e redimensiona
     req.user.avatar = buffer
