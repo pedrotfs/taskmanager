@@ -1,24 +1,9 @@
 const request = require("supertest")
-const jwt = require("jsonwebtoken")
-const mongoose = require("mongoose")
 const app = require("../src/app")
 const User = require("../src/models/user")
+const {userOne, userOneId, setupDB} = require("./fixtures/db")
 
-const userOneId = new mongoose.Types.ObjectId
-const userOne = {
-    "_id": userOneId,
-    "name": "pedro1",
-    "email": "p@p.com",
-    "password": "123456",
-    tokens: [{
-        token: jwt.sign({_id: userOneId}, process.env.TOKEN_SECRET)
-    }]
-}
-
-beforeEach(async () => { //antes de cada teste desse arquivo, deixando o banco no estado desejado para todos os testes
-    await User.deleteMany()
-    await new User(userOne).save()
-})
+beforeEach(setupDB)
 
 test("create", async () => {
     const response = await request(app).post("/users").send({
